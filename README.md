@@ -1,6 +1,4 @@
-# 📊 Activity 2: Create, Visualize, and Model Your Own Dataset
-
-## 🕒 Time: 2 hours
+# SOFTDSNL - Activity 2: Create, Visualize, and Model Your Own Dataset
 
 ---
 
@@ -12,7 +10,7 @@ By the end of this activity, you should be able to:
 - Visualize datasets with Matplotlib or Seaborn
 - Train a basic classifier (e.g., RandomForest or KNN)
 - Test predictions from user input or hardcoded samples
-- (Optional) Wrap it in a Django API endpoint
+- Wrap it in a Django API endpoint
 - Prepare and submit a clear final report
 
 ---
@@ -22,7 +20,7 @@ By the end of this activity, you should be able to:
 - Python 3.10+
 - `scikit-learn`, `matplotlib`, `seaborn`, `pandas`
 - CLI or Jupyter Notebook or Django (your choice)
-- (Optional) Postman if API is implemented
+- Postman if API is implemented
 
 ---
 
@@ -34,7 +32,7 @@ A mini machine learning project that:
 2. **Visualizes** the dataset in 2D
 3. Trains a **simple model**
 4. Predicts class/label of **new data**
-5. (Optional) Exposes your model as a **Django API**
+5. Exposes your model as a **Django API**
 
 ---
 
@@ -125,7 +123,7 @@ print("Predicted class:", prediction)
 
 ---
 
-### 6. (Optional) API Extension
+### 6. API Extension
 
 If you have extra time, wrap your model in a Django API like last time.  
 Use the same structure from your previous activity but replace the iris model with your own.
