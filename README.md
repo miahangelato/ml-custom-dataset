@@ -1,109 +1,86 @@
-# SOFTDSNL - Activity 2: Create, Visualize, and Model Your Own Dataset
+# 📊 Activity 2: Build a Custom Dataset and Train a Classifier
+
+## 🕒 Time: ~2 hours
 
 ---
 
 ## 🎯 Objectives
 
-By the end of this activity, you should be able to:
-
-- Generate synthetic datasets using Scikit-Learn
-- Visualize datasets with Matplotlib or Seaborn
-- Train a basic classifier (e.g., RandomForest or KNN)
-- Test predictions from user input or hardcoded samples
-- Wrap it in a Django API endpoint
-- Prepare and submit a clear final report
+- Create your own labeled dataset and save it as a `.csv` file
+- Load and visualize your dataset using Python
+- Train a classifier using `scikit-learn`
+- Test predictions on custom data
+- (Optional) Wrap it into a Django API
 
 ---
 
-## 📦 Requirements
+## 🧪 What You'll Do
 
-- Python 3.10+
-- `scikit-learn`, `matplotlib`, `seaborn`, `pandas`
-- CLI or Jupyter Notebook or Django (your choice)
-- Postman if API is implemented
+You’ll create your own dataset in Excel or Google Sheets, convert it to CSV, and use it to train a machine learning model. You’ll then test predictions and (optionally) turn it into an API.
 
 ---
 
-## 🧪 What You'll Build
+## 💡 Dataset Guidelines
 
-A mini machine learning project that:
+Create a small dataset (~30–50 rows) with at least **2 input features (X)** and **1 target label (Y)**.
 
-1. Creates your **own synthetic dataset**
-2. **Visualizes** the dataset in 2D
-3. Trains a **simple model**
-4. Predicts class/label of **new data**
-5. Exposes your model as a **Django API**
+Here are examples to inspire you:
+
+| Example Dataset           | X Features (inputs)                              | Y Label                 |
+|---------------------------|--------------------------------------------------|-------------------------|
+| Flowers                   | petal length, petal width                        | species (setosa, etc.)  |
+| Fruits                    | weight, sugar %, color intensity                 | type (apple, banana...) |
+| Vehicles                  | engine size, fuel type, tire size                | category (SUV, sedan)   |
+| Students                  | study hours, sleep hours                         | pass/fail               |
+| Drinks                    | calories, caffeine %, sugar level                | drink type              |
 
 ---
 
 ## 🛠️ Instructions
 
-### 1. Setup Your Environment
+### 1. Create Your CSV Dataset
 
-Create a folder or repo called `ml-data-lab`.
+- Use Excel or Google Sheets
+- Make at least **2 columns for input features**, and 1 for the **target label**
+- Example:
 
-Install dependencies:
-
-```bash
-pip install scikit-learn matplotlib seaborn pandas
+```csv
+petal_length,petal_width,species
+1.4,0.2,setosa
+4.7,1.4,versicolor
+5.5,2.1,virginica
 ```
+
+- Save/export it as: `my_dataset.csv`
 
 ---
 
-### 2. Generate Your Dataset
-
-Choose one:
+### 2. Load and Visualize Your Dataset
 
 ```python
-from sklearn.datasets import make_classification, make_blobs
-
-# Example: 3 classes, 2 features
-X, y = make_classification(
-    n_samples=300,
-    n_features=2,
-    n_redundant=0,
-    n_informative=2,
-    n_classes=3,
-    n_clusters_per_class=1,
-    random_state=42
-)
-```
-
-OR
-
-```python
-X, y = make_blobs(
-    n_samples=300,
-    centers=3,
-    n_features=2,
-    cluster_std=1.5,
-    random_state=42
-)
-```
-
----
-
-### 3. Visualize the Dataset
-
-```python
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-plt.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis', s=50)
-plt.title("Custom Dataset")
-plt.xlabel("Feature 1")
-plt.ylabel("Feature 2")
-plt.grid(True)
+df = pd.read_csv("my_dataset.csv")
+print(df.head())
+
+# Visualize the inputs colored by label
+sns.scatterplot(data=df, x="petal_length", y="petal_width", hue="species")
+plt.title("My Custom Dataset")
 plt.show()
 ```
 
 ---
 
-### 4. Train a Classifier
-
-Choose one: RandomForestClassifier, KNeighborsClassifier, or DecisionTreeClassifier
+### 3. Encode Labels & Train a Model
 
 ```python
+from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
+
+X = df[["petal_length", "petal_width"]]
+y = LabelEncoder().fit_transform(df["species"])
 
 model = RandomForestClassifier()
 model.fit(X, y)
@@ -111,80 +88,79 @@ model.fit(X, y)
 
 ---
 
-### 5. Make Predictions
-
-Ask for user input or test with hardcoded samples:
+### 4. Make Predictions
 
 ```python
-sample = [[5.5, 2.1]]
-prediction = model.predict(sample)
-print("Predicted class:", prediction)
+sample = [[5.1, 1.8]]
+predicted = model.predict(sample)
+print("Predicted label:", predicted)
 ```
 
 ---
 
-### 6. API Extension
+### 5. (Optional) Wrap in a Django API
 
-If you have extra time, wrap your model in a Django API like last time.  
-Use the same structure from your previous activity but replace the iris model with your own.
+If you finish early, re-use your Django setup from last week and:
 
----
-
-## 📄 Final Report Format (To Be Submitted)
-
-### ✅ Submit as: **GitHub Repository + Screenshot Report**
-
-- **GitHub Repo Name:** `ml-data-lab`
-- **Files Expected:**
-  - `generate_data.py` or `notebook.ipynb`
-  - `model.py`
-  - `predict.py` or `api/` folder (if using Django)
+- Load your `my_dataset.csv`
+- Train the model on startup
+- Expose a POST endpoint like `/api/predict/` that takes input fields from your dataset
 
 ---
 
-### 📷 Screenshot Requirements
+## 📄 Final Report Format
 
-Place these screenshots in a folder called `report/` or inside your README.md:
+### ✅ Submit: GitHub Repo + Screenshot Folder or README
 
-| Screenshot Topic              | Description                                      |
-|-------------------------------|--------------------------------------------------|
-| 1. Dataset Visualization      | Scatter plot showing your generated dataset     |
-| 2. Model Training Output      | Any CLI output showing model was trained        |
-| 3–6. Predictions              | At least 3–5 different input/output samples      |
-| 7–10. (Optional) Postman      | Screenshots of API working with your dataset     |
+**Repo name:** `ml-custom-dataset`
+
+**Expected files:**
+- `my_dataset.csv`
+- `train_model.py` or `notebook.ipynb`
+- `README.md`
+- `report/` folder (or screenshots inside README)
+
+---
+
+### 📷 Screenshots to Include
+
+| Screenshot Topic              | Description                                |
+|-------------------------------|--------------------------------------------|
+| 1. CSV file opened            | Show your raw dataset in Excel/Sheets      |
+| 2. pandas preview             | `print(df.head())`                         |
+| 3. Dataset visualization      | Scatterplot or seaborn output              |
+| 4. Model training output      | Console or cell showing training completed |
+| 5–7. Sample predictions       | Different inputs + printed predictions     |
+| 8–10. (Optional) Postman API  | If API was created                         |
 
 ---
 
 ### 📝 README.md Must Contain
 
-- Brief description of your dataset (what kind of distribution)
-- What classifier you chose and why
-- Sample prediction example (input + output)
-- How to run your code (instructions or command)
+- A short description of your dataset
+- Features used as input, and target label
+- Classifier used (e.g., RandomForest)
+- 2–3 sample prediction results
+- Instructions to run your code
 
 ---
 
-## 💡 Grading Guide
+## 🧠 Reflection Questions (Add to README)
 
-| Criteria                       | Points |
-|--------------------------------|--------|
-| Dataset Generated & Visualized | 20     |
-| Model Trained Successfully     | 20     |
-| Predictions Made & Explained   | 20     |
-| Code is Organized & Readable   | 20     |
-| Report + Repo Submitted        | 20     |
-| **Total**                      | **100**|
+- Why did you choose this dataset?
+- Was it easy or hard to separate the classes visually?
+- What would improve your model?
 
 ---
 
-## 🧠 Bonus Questions (Optional for +5 points)
+## 🔥 Bonus Challenge (+5 points)
 
-Answer in your README:
-
-- What would happen if you added more noise or classes?
-- Would your model still work well with more overlap?
-- What real-world data might resemble this?
+- Add more than 2 features and visualize with a pairplot or 3D scatter
+- Use a different model like `KNeighborsClassifier` or `LogisticRegression`
+- Export your predictions to a new CSV file
 
 ---
 
-## 🚀 Now Go Build Your Own ML Lab!
+## 🧠 Key Takeaway
+
+Creating and cleaning your own dataset is where real machine learning begins. It teaches data design, visualization, and basic model thinking — from scratch.
