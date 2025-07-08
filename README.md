@@ -115,7 +115,7 @@ print("✅ Model trained and saved.")
 
 ---
 
-### 5. (Optional) Create `predict.py`
+### 5. Create `predict.py`
 
 ```python
 # predict.py
@@ -234,7 +234,7 @@ Test via Postman:
 
 ## 📄 Final Report Format
 
-### ✅ Submit: GitHub Repo + Screenshot Folder or README
+### ✅ Submit: Report contaiting GitHub Repo + Screenshots
 
 **Repo name:** `ml-custom-dataset`
 
@@ -264,13 +264,12 @@ Test via Postman:
 
 ---
 
-### 📝 `README.md` Should Include:
+### 📝 Report Should Include:
 
 - Description of your dataset
 - Features and label used
 - Classifier used
-- Sample inputs and predictions
-- How to run `train_model.py`, Django server, and test the API
+- Sample inputs and predictions (Postman Screenshots)
 
 ---
 
@@ -286,13 +285,3 @@ Test via Postman:
 | **TOTAL**                            | **100**|
 
 ---
-
-## 🎉 Final Words
-
-You’ve just gone full circle:
-- Designed your own data
-- Visualized it
-- Trained an ML model
-- Exposed it as a live prediction API
-
-This is a **mini real-world ML project** — great job!
