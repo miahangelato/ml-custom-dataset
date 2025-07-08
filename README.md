@@ -22,8 +22,7 @@ ml-custom-dataset/
 ├── train_model.py                  <-- Loads, visualizes, trains model
 ├── predict.py                      <-- Separate script to test predictions
 ├── requirements.txt                <-- Dependencies list
-├── README.md                       <-- Short report with screenshots
-└── report/                         <-- Folder for screenshots (optional)
+└── README.md                       
 ```
 
 ---
