@@ -1,4 +1,4 @@
-# 📊 Activity 2: Build a Custom Dataset and Expose a Machine Learning API
+# 📊 Activity 3: Build a Custom Dataset and Expose a Machine Learning API
 
 ## 🕒 Time: ~2 hours
 
