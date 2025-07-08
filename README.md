@@ -14,97 +14,138 @@
 
 ---
 
-## 🧪 What You'll Do
+## 💻 Project Folder Structure
 
-You’ll create your own dataset in Excel or Google Sheets, convert it to CSV, and use it to train a machine learning model. You’ll then test predictions and (optionally) turn it into an API.
-
----
-
-## 💡 Dataset Guidelines
-
-Create a small dataset (~30–50 rows) with at least **2 input features (X)** and **1 target label (Y)**.
-
-Here are examples to inspire you:
-
-| Example Dataset           | X Features (inputs)                              | Y Label                 |
-|---------------------------|--------------------------------------------------|-------------------------|
-| Flowers                   | petal length, petal width                        | species (setosa, etc.)  |
-| Fruits                    | weight, sugar %, color intensity                 | type (apple, banana...) |
-| Vehicles                  | engine size, fuel type, tire size                | category (SUV, sedan)   |
-| Students                  | study hours, sleep hours                         | pass/fail               |
-| Drinks                    | calories, caffeine %, sugar level                | drink type              |
+```
+ml-custom-dataset/
+├── my_dataset.csv                  <-- Your custom dataset (you'll create this)
+├── train_model.py                  <-- Loads, visualizes, trains model
+├── predict.py                      <-- Separate script to test predictions
+├── requirements.txt                <-- Dependencies list
+├── README.md                       <-- Short report with screenshots
+└── report/                         <-- Folder for screenshots (optional)
+```
 
 ---
 
-## 🛠️ Instructions
+## 📦 Setup Instructions
 
-### 1. Create Your CSV Dataset
+### 1. Create Your Project Folder
 
-- Use Excel or Google Sheets
-- Make at least **2 columns for input features**, and 1 for the **target label**
-- Example:
+```bash
+mkdir ml-custom-dataset
+cd ml-custom-dataset
+```
 
-```csv
+---
+
+### 2. Create Your Dataset (CSV)
+
+Open Excel or Google Sheets. Make a dataset with at least 2 numeric input features and 1 label.
+
+Example:
+
+```
 petal_length,petal_width,species
 1.4,0.2,setosa
 4.7,1.4,versicolor
 5.5,2.1,virginica
+...
 ```
 
-- Save/export it as: `my_dataset.csv`
+- Save/export as `my_dataset.csv` in your project folder.
+- Recommended size: 30–50 rows.
 
 ---
 
-### 2. Load and Visualize Your Dataset
+### 3. Create `requirements.txt`
+
+```txt
+pandas
+matplotlib
+seaborn
+scikit-learn
+```
+
+Install all at once:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 4. Create `train_model.py`
+
+This script loads your CSV, visualizes the data, and trains a model.
 
 ```python
+# train_model.py
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+import joblib
 
+# 1. Load dataset
 df = pd.read_csv("my_dataset.csv")
+print("First 5 rows:")
 print(df.head())
 
-# Visualize the inputs colored by label
+# 2. Visualize (change x/y if you use different columns)
 sns.scatterplot(data=df, x="petal_length", y="petal_width", hue="species")
-plt.title("My Custom Dataset")
+plt.title("Custom Dataset")
 plt.show()
-```
 
----
-
-### 3. Encode Labels & Train a Model
-
-```python
-from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import RandomForestClassifier
-
+# 3. Prepare features and labels
 X = df[["petal_length", "petal_width"]]
-y = LabelEncoder().fit_transform(df["species"])
+le = LabelEncoder()
+y = le.fit_transform(df["species"])
 
+# 4. Train model
 model = RandomForestClassifier()
 model.fit(X, y)
+
+# 5. Save model and encoder for later use
+joblib.dump(model, "model.pkl")
+joblib.dump(le, "label_encoder.pkl")
+
+print("✅ Model trained and saved as model.pkl")
 ```
 
 ---
 
-### 4. Make Predictions
+### 5. Create `predict.py`
+
+This file loads the trained model and predicts new data.
 
 ```python
-sample = [[5.1, 1.8]]
-predicted = model.predict(sample)
-print("Predicted label:", predicted)
+# predict.py
+
+import joblib
+
+# Load saved model and label encoder
+model = joblib.load("model.pkl")
+le = joblib.load("label_encoder.pkl")
+
+# Test input (edit this!)
+sample = [[5.1, 1.8]]  # petal_length, petal_width
+
+# Predict
+pred = model.predict(sample)
+label = le.inverse_transform(pred)
+
+print("Prediction:", label[0])
 ```
 
 ---
 
-### 5. (Optional) Wrap in a Django API
+## 🔥 (Optional) API Extension
 
-If you finish early, re-use your Django setup from last week and:
-
-- Load your `my_dataset.csv`
-- Train the model on startup
-- Expose a POST endpoint like `/api/predict/` that takes input fields from your dataset
+Already familiar with Django from Activity 1?  
+Recreate a `/predict/` endpoint using your trained `model.pkl`.
 
 ---
 
@@ -114,53 +155,70 @@ If you finish early, re-use your Django setup from last week and:
 
 **Repo name:** `ml-custom-dataset`
 
-**Expected files:**
-- `my_dataset.csv`
-- `train_model.py` or `notebook.ipynb`
-- `README.md`
-- `report/` folder (or screenshots inside README)
+**Expected Files:**
+
+| File                     | Description                          |
+|--------------------------|--------------------------------------|
+| `my_dataset.csv`         | Your custom dataset                  |
+| `train_model.py`         | Trains and saves model               |
+| `predict.py`             | Loads and predicts new input         |
+| `README.md`              | Final writeup and summary            |
+| `report/` folder         | Screenshots (optional)               |
 
 ---
 
-### 📷 Screenshots to Include
+### 📷 Screenshot Requirements
 
-| Screenshot Topic              | Description                                |
-|-------------------------------|--------------------------------------------|
-| 1. CSV file opened            | Show your raw dataset in Excel/Sheets      |
-| 2. pandas preview             | `print(df.head())`                         |
-| 3. Dataset visualization      | Scatterplot or seaborn output              |
-| 4. Model training output      | Console or cell showing training completed |
-| 5–7. Sample predictions       | Different inputs + printed predictions     |
-| 8–10. (Optional) Postman API  | If API was created                         |
-
----
-
-### 📝 README.md Must Contain
-
-- A short description of your dataset
-- Features used as input, and target label
-- Classifier used (e.g., RandomForest)
-- 2–3 sample prediction results
-- Instructions to run your code
+| Screenshot Topic              | Description                                 |
+|-------------------------------|---------------------------------------------|
+| 1. Raw dataset                | CSV file shown in Excel or Sheets           |
+| 2. pandas preview             | `print(df.head())` from `train_model.py`    |
+| 3. Visualization              | Scatterplot or seaborn output               |
+| 4. Training output            | CLI print confirming model was trained      |
+| 5–7. Sample predictions       | Console printouts from `predict.py`         |
+| 8–10. (Optional) Postman/API  | If API was added                           |
 
 ---
 
-## 🧠 Reflection Questions (Add to README)
+### 📝 `README.md` Should Include:
+
+- ✅ Brief explanation of your dataset (what & why)
+- ✅ Features and label used
+- ✅ Classifier used (e.g., RandomForest)
+- ✅ At least 2 sample predictions
+- ✅ How to run your code
+
+---
+
+### 🧠 Reflection Questions (Add to README)
 
 - Why did you choose this dataset?
-- Was it easy or hard to separate the classes visually?
-- What would improve your model?
+- What do you think affects prediction accuracy?
+- How could you improve this in the future?
 
 ---
 
-## 🔥 Bonus Challenge (+5 points)
+## 💡 Bonus Ideas (Optional for +5 pts)
 
-- Add more than 2 features and visualize with a pairplot or 3D scatter
-- Use a different model like `KNeighborsClassifier` or `LogisticRegression`
-- Export your predictions to a new CSV file
+- Add a third feature (3D scatter plot!)
+- Export predictions to a new CSV
+- Compare accuracy between different classifiers (e.g., KNN vs RF)
 
 ---
 
-## 🧠 Key Takeaway
+## ✅ Grading Guide
 
-Creating and cleaning your own dataset is where real machine learning begins. It teaches data design, visualization, and basic model thinking — from scratch.
+| Criteria                             | Points |
+|--------------------------------------|--------|
+| Dataset Created and Loaded Correctly | 20     |
+| Visualization with Plot              | 20     |
+| Model Training                       | 20     |
+| Sample Predictions                   | 20     |
+| Organized Repo + Report              | 20     |
+| **TOTAL**                            | **100**|
+
+---
+
+## 🎉 Congratulations!
+
+You've now created your own dataset, trained a model, made predictions, and optionally exposed it as an API — just like real-world data science!
