@@ -1,8 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
-# ml_api/views.py
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,11 +5,13 @@ import joblib
 import os
 from django.conf import settings
 
+# Construct paths to your model and label encoder files inside the ml_api folder
 model_path = os.path.join(settings.BASE_DIR, "ml_api", "model.pkl")
 encoder_path = os.path.join(settings.BASE_DIR, "ml_api", "label_encoder.pkl")
 
-model = joblib.load("model.pkl")
-label_encoder = joblib.load("label_encoder.pkl")
+# Load the model and label encoder once
+model = joblib.load(model_path)
+label_encoder = joblib.load(encoder_path)
 
 class PredictView(APIView):
     def post(self, request):
