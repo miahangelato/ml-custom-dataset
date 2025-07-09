@@ -1,5 +1,9 @@
+## 📝 Manese    Sanchez     To
+
+---
 # 📊 Activity 3: Build a Custom Dataset and Expose a Machine Learning API
 
+---
 ## 🕒 Time: ~2 hours
 
 ---
@@ -24,66 +28,61 @@ ml-custom-dataset/
 ├── requirements.txt
 ├── README.md
 ├── report/                         <-- (Optional) Screenshots folder
-└── ml_api_project/                 <-- Your Django project
+└── ml_api_project/                 <-- Your Django project root
+    ├── db.sqlite3
     ├── manage.py
     ├── ml_api_project/
+    │   ├── __init__.py
+    │   ├── asgi.py
     │   ├── settings.py
-    │   └── urls.py
+    │   ├── urls.py
+    │   └── wsgi.py
     └── ml_api/
-        ├── views.py
-        ├── urls.py
+        ├── __init__.py
+        ├── admin.py
         ├── apps.py
-        └── __init__.py
+        ├── label_encoder.pkl
+        ├── model.pkl
+        ├── migrations/
+        │   └── __init__.py
+        ├── models.py
+        ├── tests.py
+        ├── urls.py
+        └── views.py
+
 ```
 
 ---
 
 ## 🛠️ Part 1: Dataset and Model
 
-### 1. Create Your Project Folder
+### Our Dataset in Excel or Sheets
 
-```bash
-mkdir ml-custom-dataset
-cd ml-custom-dataset
 ```
+hours_sleep,screen_time,caffeine_mg,alertness_level
+8,2,0,high
+6,5,100,medium
+5,6,150,low
+7,3,50,medium
+4,7,200,low
+9,1,0,high
+6,4,120,medium
+3,8,250,low
+7,2,30,high
+5,6,180,low
+6,3,60,medium
+8,2,20,high
+4,7,220,low
+7,4,90,medium
+9,1,0,high
+
+```
+
+Saved as `my_dataset.csv`.
 
 ---
 
-### 2. Create Your Dataset in Excel or Sheets
-
-Example (at least 2 numeric features and 1 label):
-
-```
-petal_length,petal_width,species
-1.4,0.2,setosa
-4.7,1.4,versicolor
-5.5,2.1,virginica
-```
-
-Save as `my_dataset.csv`.
-
----
-
-### 3. Create `requirements.txt`
-
-```txt
-pandas
-matplotlib
-seaborn
-scikit-learn
-joblib
-djangorestframework
-```
-
-Install everything:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 4. Create `train_model.py`
+### Created `train_model.py`
 
 ```python
 # train_model.py
@@ -97,13 +96,13 @@ import joblib
 
 df = pd.read_csv("my_dataset.csv")
 
-sns.scatterplot(data=df, x="petal_length", y="petal_width", hue="species")
+sns.scatterplot(data=df, x="hours_sleep",y="screen_time",hue="alertness_level")
 plt.title("Custom Dataset")
 plt.show()
 
-X = df[["petal_length", "petal_width"]]
+X = df[["hours_sleep", "screen_time","caffeine_mg" ]]
 le = LabelEncoder()
-y = le.fit_transform(df["species"])
+y = le.fit_transform(df["alertness_level"])
 
 model = RandomForestClassifier()
 model.fit(X, y)
@@ -115,7 +114,7 @@ print("✅ Model trained and saved.")
 
 ---
 
-### 5. Create `predict.py`
+### Created `predict.py`
 
 ```python
 # predict.py
@@ -125,9 +124,10 @@ import joblib
 model = joblib.load("model.pkl")
 le = joblib.load("label_encoder.pkl")
 
-sample = [[5.5, 2.1]]
+sample = [[7, 3, 50]]  # update with 3 features matching your dataset
 prediction = model.predict(sample)
 print("Prediction:", le.inverse_transform(prediction)[0])
+
 ```
 
 ---
@@ -136,16 +136,16 @@ print("Prediction:", le.inverse_transform(prediction)[0])
 
 ---
 
-### 1. Create Django Project and App
+### Created Django Project and App
 
 ```bash
 django-admin startproject ml_api_project .
-python manage.py startapp ml_api
+py manage.py startapp ml_api
 ```
 
 ---
 
-### 2. Update `ml_api_project/settings.py`
+### Updated `ml_api_project/settings.py`
 
 ```python
 INSTALLED_APPS = [
@@ -157,7 +157,7 @@ INSTALLED_APPS = [
 
 ---
 
-### 3. Create `ml_api/urls.py`
+### Created `ml_api/urls.py`
 
 ```python
 from django.urls import path
@@ -170,7 +170,7 @@ urlpatterns = [
 
 ---
 
-### 4. Update `ml_api_project/urls.py`
+### 4. Updated `ml_api_project/urls.py`
 
 ```python
 from django.contrib import admin
@@ -184,7 +184,7 @@ urlpatterns = [
 
 ---
 
-### 5. Create `ml_api/views.py`
+### Created `ml_api/views.py`
 
 ```python
 # ml_api/views.py
@@ -200,23 +200,24 @@ label_encoder = joblib.load("label_encoder.pkl")
 class PredictView(APIView):
     def post(self, request):
         try:
-            petal_length = float(request.data.get("petal_length"))
-            petal_width = float(request.data.get("petal_width"))
+            hours_sleep = float(request.data.get("hours_sleep"))
+            screen_time = float(request.data.get("screen_time"))
+            caffeine_mg = float(request.data.get("caffeine_mg"))
 
-            prediction = model.predict([[petal_length, petal_width]])
+            prediction = model.predict([[hours_sleep, screen_time, caffeine_mg]])
             label = label_encoder.inverse_transform(prediction)[0]
 
             return Response({"prediction": label})
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-```
+
 
 ---
 
 ### 6. Run Server
 
 ```bash
-python manage.py runserver
+py manage.py runserver
 ```
 
 Test via Postman:
@@ -225,51 +226,11 @@ Test via Postman:
 
 ```json
 {
-  "petal_length": 5.5,
-  "petal_width": 2.1
+  "hours_sleep": 7,
+  "screen_time": 3,
+  "caffeine_mg": 50
 }
 ```
-
----
-
-## 📄 Final Report Format
-
-### ✅ Submit: Report contaiting GitHub Repo + Screenshots
-
-**Repo name:** `ml-custom-dataset`
-
-**Expected Files:**
-
-| File                     | Description                          |
-|--------------------------|--------------------------------------|
-| `my_dataset.csv`         | Your custom dataset                  |
-| `train_model.py`         | Trains and saves model               |
-| `predict.py`             | Optional CLI test                    |
-| `ml_api_project/`        | Django project for the API           |
-| `README.md`              | Final writeup and summary            |
-| `report/` folder         | Screenshots (optional)               |
-
----
-
-### 📷 Screenshots to Include
-
-| Screenshot Topic              | Description                                 |
-|-------------------------------|---------------------------------------------|
-| 1. Raw dataset                | CSV file shown in Excel or Sheets           |
-| 2. pandas preview             | `print(df.head())` from `train_model.py`    |
-| 3. Visualization              | Scatterplot or seaborn output               |
-| 4. Training output            | CLI print confirming model was trained      |
-| 5–7. Sample predictions       | Postman or `predict.py` outputs             |
-| 8–10. API response screenshots| Postman request/response to your API        |
-
----
-
-### 📝 Report Should Include:
-
-- Description of your dataset
-- Features and label used
-- Classifier used
-- Sample inputs and predictions (Postman Screenshots)
 
 ---
 
